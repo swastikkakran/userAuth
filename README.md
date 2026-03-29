@@ -4,7 +4,6 @@ So I decided to private all my repos and do a fresh start. Build things from the
 So, here is an authentication system.
 
 "With great curiosity, comes great number of unfinished projects" - SK
-
 ---
 
 ## v1
