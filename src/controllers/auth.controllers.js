@@ -95,4 +95,11 @@ const loginUser = asyncHandler(async function(req, res) {
         )
 })
 
+//later
+const deleteUser = asyncHandler(async function (req, res) {
+    
+    const { id } = req.params   
+
+})
+
 export { registerUser, loginUser }
