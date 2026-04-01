@@ -7,9 +7,14 @@ import { User } from "../models/user.models.js";
 const generateAccessAndRefreshToken = async function (userId) {
     try {
         const user = await User.findById(userId)
+        const accessToken = user.generateAccessToken()
+        const refreshToken = user.generateRefreshToken()
 
+        user.refreshToken = refreshToken
+        await user.save({validateBeforeSave: false})
+        return { accessToken, refreshToken }
     } catch (error) {
-        
+        throw new ApiError(500, "error generating access and refresh tokens...")
     }
 }
 
@@ -60,9 +65,9 @@ const loginUser = asyncHandler(async function(req, res) {
         throw new ApiError(400, "invalid credentials!")
     }
 
-    const isPasswordCorrect = await existingUser.isPasswordCorrect(password)
+    const isPasswordValid = await existingUser.isPasswordCorrect(password)
 
-    if (!isPasswordCorrect) {
+    if (!isPasswordValid) {
         throw new ApiError(400, "invalid password!")
     }
 
