@@ -18,12 +18,12 @@ const registerValidator = [
 ]
 
 const loginValidator = [
-    body("email")
+    body("email").optional()
         .trim()
         .notEmpty().withMessage("Email is required")
         .isEmail().withMessage("Invalid email format"),
 
-    body("username")
+    body("username").optional()
         .trim()
         .notEmpty().withMessage("Username is required")
         .isLength({ min: 3, max: 20 }).withMessage("Username must be 3-20 characters")

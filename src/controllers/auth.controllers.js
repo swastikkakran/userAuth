@@ -105,7 +105,7 @@ const deleteUser = asyncHandler(async function (req, res) {
     }
 
     const user = await User.findOneAndUpdate(
-    { id, isDeleted: false},
+    { _id, isDeleted: false},
     { isDeleted: true },
     { new: true }
     )
