@@ -3,17 +3,18 @@ import { ApiError } from "../utils/api-error.js";
 import { asyncHandler } from "../utils/async-handler.js";
 import { User } from "../models/user.models.js";
 
-// later 
+
 const generateAccessAndRefreshToken = async function (userId) {
     try {
         const user = await User.findById(userId)
-        const accessToken = user.generateAccessToken()
-        const refreshToken = user.generateRefreshToken()
+        const accessToken = await user.generateAccessToken()
+        const refreshToken = await user.generateRefreshToken()
 
         user.refreshToken = refreshToken
         await user.save({validateBeforeSave: false})
         return { accessToken, refreshToken }
     } catch (error) {
+        console.log(error)
         throw new ApiError(500, "error generating access and refresh tokens...")
     }
 }
@@ -57,7 +58,7 @@ const loginUser = asyncHandler(async function(req, res) {
     }
 
     //checking if User exists or not
-    const existingUser = User.findOne({
+    const existingUser = await User.findOne({
         $or: [{email}, {username}]
     })
 
@@ -71,7 +72,7 @@ const loginUser = asyncHandler(async function(req, res) {
         throw new ApiError(400, "invalid password!")
     }
 
-    const { accessToken, refreshToken } = generateAccessAndRefreshToken(existingUser._id)
+    const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existingUser._id)
 
     const loggedUser = existingUser.toObject()
     delete loggedUser.password
