@@ -22,5 +22,5 @@ So, here is an authentication system.
 
 | METHOD | ENDPOINT | DESCRIPTION |
 |--------|----------|-------------|
-| PATCH |  | reset password |
-| PATCH |  | reset email/username |
+| PATCH | /reset-password | reset password |
+| PATCH | /change-credentials | reset email/username |
