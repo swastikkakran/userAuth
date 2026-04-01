@@ -69,7 +69,7 @@ const loginUser = asyncHandler(async function(req, res) {
     const isPasswordValid = await existingUser.isPasswordCorrect(password)
 
     if (!isPasswordValid) {
-        throw new ApiError(400, "invalid password!")
+        throw new ApiError(400, "invalid credentials!")
     }
 
     const { accessToken, refreshToken } = await generateAccessAndRefreshToken(existingUser._id)
@@ -89,7 +89,7 @@ const loginUser = asyncHandler(async function(req, res) {
         .json(
             new ApiResponse(
                 200,
-                {user: loggedUser, accessToken, refreshToken},
+                {user: loggedUser},
                 "user loggedin succesfully"
             )
         )
@@ -104,18 +104,16 @@ const deleteUser = asyncHandler(async function (req, res) {
         throw new ApiError(404, "id not found!")
     }
 
-    const existedUser = User.findActiveId(id)
-
-    if (!existedUser) {
-        throw new ApiError(400, "user id doesn't exists...")
-    }
-
-    const user = await User.findByIdAndUpdate(
-    id,
+    const user = await User.findOneAndUpdate(
+    { id, isDeleted: false},
     { isDeleted: true },
     { new: true }
-)
-    res.status(200).json(new ApiResponse(200, "user deleted successfully"))
+    )
+
+    if (!user) {
+        throw new ApiError(404, "user not found!")
+    }
+    res.status(200).json(new ApiResponse(200, null, "user deleted successfully"))
 })
 
 export { registerUser, loginUser, deleteUser }
