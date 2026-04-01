@@ -24,6 +24,10 @@ const userSchema = new Schema({
         trim: true,
         required: true
     },
+    isDeleted: {
+        type: Boolean,
+        default: false
+    },
     refreshToken: String
     
 }, {timestamps: true})
