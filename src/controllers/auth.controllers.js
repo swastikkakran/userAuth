@@ -6,7 +6,7 @@ import { User } from "../models/user.models.js";
 
 const generateAccessAndRefreshToken = async function (userId) {
     try {
-        const user = await User.findById(userId)
+        const user = await User.findActiveId(userId)
         const accessToken = await user.generateAccessToken()
         const refreshToken = await user.generateRefreshToken()
 
@@ -24,7 +24,7 @@ const registerUser = asyncHandler(async function(req, res) {
     const {email, username, password} = req.body
     
     //checking if username or email already exists
-    const existingUser = await User.findOne({
+    const existingUser = await User.findActiveOne({
         $or: [{email: email}, {username: username}]
     })
     
@@ -39,7 +39,7 @@ const registerUser = asyncHandler(async function(req, res) {
         password: password
     })
 
-    const createdUser = await User.findById(user._id).select("-password -refreshToken")
+    const createdUser = await User.findActiveId(user._id).select("-password -refreshToken -isDeleted")
 
     if (!createdUser) {
         throw new ApiError(500, "Problem occured while creating user!")
@@ -53,12 +53,12 @@ const loginUser = asyncHandler(async function(req, res) {
 
     const {email, username, password} = req.body
 
-    if (!email || !username) {
+    if (!email && !username) {
         throw new ApiError(400, "email or username required!")
     }
 
     //checking if User exists or not
-    const existingUser = await User.findOne({
+    const existingUser = await User.findActiveOne({
         $or: [{email}, {username}]
     })
 
@@ -83,7 +83,7 @@ const loginUser = asyncHandler(async function(req, res) {
     }
 
     return res
-        .status(201)
+        .status(200)
         .cookie("accessToken", accessToken, options)
         .cookie("refreshToken", refreshToken, options)
         .json(
@@ -100,6 +100,22 @@ const deleteUser = asyncHandler(async function (req, res) {
     
     const { id } = req.params   
 
+    if (!id) {
+        throw new ApiError(404, "id not found!")
+    }
+
+    const existedUser = User.findActiveId(id)
+
+    if (!existedUser) {
+        throw new ApiError(400, "user id doesn't exists...")
+    }
+
+    const user = await User.findByIdAndUpdate(
+    id,
+    { isDeleted: true },
+    { new: true }
+)
+    res.status(200).json(new ApiResponse(200, "user deleted successfully"))
 })
 
-export { registerUser, loginUser }
+export { registerUser, loginUser, deleteUser }

@@ -32,12 +32,26 @@ const userSchema = new Schema({
     
 }, {timestamps: true})
 
+
+//pre/post hooks
 userSchema.pre("save", async function() {
     if (!this.isModified("password")) return;
 
     this.password = await bcrypt.hash(this.password, 10);
 })
 
+
+//schema statics
+userSchema.statics.findActiveId = function (id) {
+    return this.findById(id).where({ isDeleted: false })
+}
+
+userSchema.statics.findActiveOne = function (query = {}) {
+    return this.findOne({ ...query, isDeleted: false })
+}
+
+
+//schema methods
 userSchema.methods.isPasswordCorrect = async function (password) {
     return await bcrypt.compare(password, this.password)
 }

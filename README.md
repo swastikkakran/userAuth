@@ -13,7 +13,7 @@ So, here is an authentication system.
 |--------|----------|-------------|
 | POST | /register | register new user |
 | POST | /login | login existing user |
-| DELETE | /remove | delete existing user |
+| DELETE | /delete:id | delete existing user |
 
 
 

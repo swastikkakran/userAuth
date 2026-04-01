@@ -13,4 +13,8 @@ app.get("/", (req, res )=> {res.send("yooo")})
 import authRouter from "./routes/auth.routes.js"
 app.use("/api/v1/auth", authRouter)
 
+//user services
+import userServicesRouter from "./routes/users.routes.js"
+app.use("/api/v1/users", userServicesRouter)
+
 export { app }
